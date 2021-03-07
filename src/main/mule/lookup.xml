@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9cfc05ed-4fec-4d05-821c-450b7ad5f028" >
+		<http:listener-connection host="0.0.0.0" port="8083" />
+	</http:listener-config>
+	<flow name="lookupFlow" doc:id="69a85c70-9830-4890-a358-79217b6d9d2d" >
+		<http:listener doc:name="Listener" doc:id="f92ce7d1-265c-4e74-becf-835a80620880" config-ref="HTTP_Listener_config" path="/api/lookup"/>
+		<set-payload value='#["WELCOME"]' doc:name="Set Payload" doc:id="900ea3e7-55f6-4dd5-b36d-69f4a7aa1b72" />
+		<ee:transform doc:name="Transform Message" doc:id="12255697-288f-4a0f-9330-d7f427468e6f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+lookup ("private_lookup",payload,5000)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="private_lookup" doc:id="58626d4c-aa04-45b3-9372-6aa6c496dead" >
+		<ee:transform doc:name="Transform Message" doc:id="53cf3e69-765d-41c6-afbc-9d8e4924dd0e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Private_lookup"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
